@@ -23,11 +23,11 @@ var MainModel = function (movieName) {
     self.pageTitle = ko.observable();
     self.movieDisplayName = ko.computed({
         read: function () {
-            return self.pageTitle === null ? 'Search For a Movie' : self.pageTitle;
+            return self.pageTitle === null ? 'Search For A Game' : self.pageTitle;
         }
     });
     self.newMovieTitle = ko.observable(movieName);
-
+    
     self.displayMovieData = ko.observable(false);
     self.movieData = ko.observable({});
 
@@ -36,6 +36,8 @@ var MainModel = function (movieName) {
     self.loadMovieData = function () {
 
         var package = {
+            game_id: (self.newMovieTitle()).replace(/ /g, "+"),
+            studio: (self.ne)
             t: (self.newMovieTitle()).replace(/ /g, "+"),
             r: 'json'
         };

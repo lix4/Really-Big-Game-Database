@@ -8,7 +8,7 @@
     <title>Intro To Web Development</title>
     <!-- JQuery -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-    <!-- knockout -->
+    <!--knockout -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.0/knockout-min.js" type="text/javascript" charset="utf-8"></script>
     <!-- bootstrap -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7"
@@ -18,39 +18,39 @@
 
     <!--local file-->
     <link rel="stylesheet" type="text/css" href="../CSS/searchGame.css">
-    <script src="../Javascript/searchGame.js" type="text/javascript" charset="utf-8" async defer></script>
+    <script src="../JavaScript/searchGame.js"></script>
 
 </head>
 
 <body>
     <div class="container main">
         <div class="header">
-            <h1 data-bind="text: pageTitle()"></h1>
-            <form class="" data-bind="submit: loadMovieData">
-                Search For A Game:
+            <h1>Search For A Game:</h1>
+            <form class="sourceform">
                 <div class="input-group">
-                    <input class="form-control" data-bind="value: newMovieTitle" placeholder="What movie should display?" />
+                    <input id="searchBar" class="form-control" placeholder="What movie should display?" />
                     <span class="input-group-btn">
-		        <button class="btn btn-submit" type="submit">Search</button>
+		       <button class="btn btn-submit" type="button">Search</button>
             </span>
                 </div>
             </form>
         </div>
         <hr>
 
-        <div class="container-fluid" data-bind="visible: displayMovieData">
+        <div class="container-fluid">
             <div class="row">
                 <div class="col-lg-4 col-md-4">
-                    <img data-bind="attr:{src: movieData().Poster}" />
+                    <img/>
                 </div>
                 <div class="col-lg-8 col-md-4">
-                    <h1 data-bind="text: pageTitle()"></h1>
-                    <h2 data-bind="text: movieData().Genre"></h2>
-                    <h3 data-bind="text: movieData().Actors"></h3>
+                    <h1></h1>
+                    <h2></h2>
+                    <h3></h3>
                 </div>
             </div>
         </div>
     </div>
+
 </body>
 
 </html>

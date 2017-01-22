@@ -17,7 +17,7 @@
             series: Series
         };
         $.ajax({
-            url: "jbdc:sqlserver://titan.csse.rose-hulman.edu;databaseName=ReallyBigGameDatabase;",
+            url: "searchGame.php",
             type: "GET",
             data: inputData,
             success: function (data) {
@@ -30,7 +30,7 @@
     };
 
     function displayMovie(data) {
-        
+
     }
 
     function getFormData() {

@@ -1,12 +1,33 @@
 <!doctype html>
-<title>Flaskr</title>
+<title>Games</title>
 <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
 <div class=page>
-  <h1>Flaskr</h1>
-  <div class=metanav>
-  </div>
-  {% for message in get_flashed_messages() %}
+  <button type="submit">Logout</button>
+  <h1>Really Big Game DataBase</h1>
+  <div id="left">
+    <form class="" data-bind="submit: loadMovieData">
+      Search For a game:
+      <div class="input-group">
+        <input class="form-control" data-bind="value: newMovieTitle" placeholder="What game should display?" />
+        <span class="input-group-btn">
+		        <button class="btn btn-submit" type="submit">Search</button>
+            </span>
+      </div>
+    </form>
+
+    {% for message in get_flashed_messages() %}
     <div class=flash>{{ message }}</div>
-  {% endfor %}
-  {% block body %}{% endblock %}
+    {% endfor %} {% block left %}{% endblock %}
+  </div>
+
+
+
+  <div id="right">
+    {% for message in get_flashed_messages() %}
+    <div class=flash>{{ message }}</div>
+    {% endfor %} {% block right %}{% endblock %}
+  </div>
+
+</div>
+
 </div>

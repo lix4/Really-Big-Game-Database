@@ -6,7 +6,7 @@ import pyodbc
 from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash
 
-conn = pyodbc.connect('DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=kelleyld;PWD=USE_YOUR_OWN!');
+conn = pyodbc.connect('DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
 cursor=conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
@@ -20,11 +20,14 @@ app = Flask(__name__)
 def hello():
     cursor.execute("SELECT * FROM Game")
     rows = cursor.fetchall()
-    return render_template('show_entries.html', entries=rows)
+    return render_template('show_entries.html', entries=rows, recommendations=rows)
 
-@app.route("/test/")
-def test():
-    return "Hello world"
+# def recommendation():
+#     cursor.execute("SELECT * FROM Game")
+#     rows = cursor.fetchall()
+#     print("Should print")
+#     print(len(rows))
+#     return render_template('show_entries.html', recommendations=rows)
 
 if __name__ == "__main__":
     app.run()

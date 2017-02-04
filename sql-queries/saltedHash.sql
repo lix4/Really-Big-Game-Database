@@ -3,4 +3,4 @@ CREATE PROCEDURE saltedHash
   @pass char(30),
   @result BINARY(30) OUTPUT
 AS
-  SET @result = HASHBYTES('SHA1', CONCAT(@uname, @pass));
+  SET @result = HASHBYTES('SHA1', CONCAT(@uname, @pass))

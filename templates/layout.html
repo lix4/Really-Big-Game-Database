@@ -1,33 +1,39 @@
-<!doctype html>
-<title>Games</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-  <button type="submit">Logout</button>
-  <h1>Really Big Game DataBase</h1>
-  <div id="left">
-    <form class="" data-bind="submit: loadMovieData">
-      Search For a game:
-      <div class="input-group">
-        <input class="form-control" data-bind="value: newMovieTitle" placeholder="What game should display?" />
-        <span class="input-group-btn">
-		        <button class="btn btn-submit" type="submit">Search</button>
+<!Doctype html>
+
+<head>
+  <title>Games</title>
+  <link rel="stylesheet" type="text/css" href="./main.css" />
+</head>
+
+<body>
+  <div class=page>
+    <button type="submit">Logout</button>
+    <h1>Really Big Game DataBase</h1>
+    <div id="left">
+      <form class="" method="POST">
+        Search For a game:
+        <div>
+          <input type="text" name="search" value="{{request.form.search}}" placeholder="Search for your game?" value="searchGame" />
+          <span>
+		        <input type="submit" name="submit" value="searchGame"/>
             </span>
-      </div>
-    </form>
+        </div>
+      </form>
 
-    {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-    {% endfor %} {% block left %}{% endblock %}
+      {% for message in get_flashed_messages() %}
+      <div class=flash>{{ message }}</div>
+      {% endfor %} {% block left %}{% endblock %}
+    </div>
+
+
+
+    <div id="right">
+      {% for message in get_flashed_messages() %}
+      <div class=flash>{{ message }}</div>
+      {% endfor %} {% block right %}{% endblock %}
+    </div>
+
   </div>
 
-
-
-  <div id="right">
-    {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-    {% endfor %} {% block right %}{% endblock %}
   </div>
-
-</div>
-
-</div>
+</body>

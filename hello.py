@@ -16,18 +16,25 @@ for row in rows:
 app = Flask(__name__)
 
 
-@app.route("/")
-def hello():
+@app.route("/", methods = ['GET', 'POST'])
+def main():
+    if (request.method == 'POST'):
+        return render_template('show_entries.html', entries=search())
+    elif (request.method == 'GET'):
+        rows = showInfo()
+        return render_template('show_entries.html', entries=rows, recommendations=rows)
+
+def showInfo():
     cursor.execute("SELECT * FROM Game")
     rows = cursor.fetchall()
-    return render_template('show_entries.html', entries=rows, recommendations=rows)
+    return rows
 
-# def recommendation():
-#     cursor.execute("SELECT * FROM Game")
-#     rows = cursor.fetchall()
-#     print("Should print")
-#     print(len(rows))
-#     return render_template('show_entries.html', recommendations=rows)
+def search():
+    if request.form['submit'] == 'searchGame':
+       print('button')
+       print(request.form['search'])
+       cursor.execute('EXEC searchGames ' + request.form['search'])
+       return cursor.fetchall()
 
 if __name__ == "__main__":
     app.run()

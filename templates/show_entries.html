@@ -1,20 +1,25 @@
-{% extends "layout.html" %} 
+{% extends "layout.html" %}
 {% block left %}
-<ul class=entries>
-  {% for entry in entries %}
-  <li>
-    <h2>{{ entry.GName }}</h2>
-    {{ entry.GName|safe }} {{ entry.Game_id|safe }} {{entry.Picture|safe}} {% else %}
-    <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
-</ul>
-{% endblock %} 
-
-{% block right%}
-<ul class="recommendations">
-  {% for entry in recommendations %}
-  <li>
-    <h2>{{ entry.GName }}</h2>
-    {{ entry.GName|safe }} {{ entry.Game_id|safe }} {% else %}
-    <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
-</ul>
+<table>
+  <tr>
+    <td>
+      <ul class=entries>
+        {% for entry in entries %}
+        <li>
+          <h2>{{ entry.GName }}</h2>
+          {{ entry.GName|safe }} {{ entry.Game_id|safe }} {{entry.Picture|safe}} {% else %}
+        <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
+      </ul>
+    </td>
+    <td>
+      <ul class="recommendations">
+        {% for entry in recommendations %}
+        <li>
+          <h2>{{ entry.GName }}</h2>
+          {{ entry.GName|safe }} {{ entry.Game_id|safe }} {% else %}
+        <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
+      </ul>
+    </td>
+  </tr>
+</table>
 {% endblock %}

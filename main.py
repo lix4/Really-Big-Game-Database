@@ -41,7 +41,7 @@ users = []
 @app.route("/", methods=['GET', 'POST'])
 def main():
     if (request.method == 'POST'):
-        # , showRecommendation()
+        #, showRecommendation()
         return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         rows = showInfo()
@@ -49,7 +49,7 @@ def main():
 
 
 def showInfo():
-    cursor.execute("SELECT * FROM Game")
+    cursor.execute("SELECT TOP(20) * FROM Game")
     rows = cursor.fetchall()
     return rows
 
@@ -104,7 +104,7 @@ def showRecommendation():
 
 def search():
     if request.form['submit'] == 'searchGame':
-        cursor.execute('EXEC searchGames ' + request.form['search'])
+        cursor.execute('EXEC searchGames \'' + request.form['search'] + '\'')
         return cursor.fetchall()
 
 @app.route("/inside_post/", methods=['GET', 'POST'])

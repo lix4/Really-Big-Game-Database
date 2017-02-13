@@ -5,53 +5,105 @@
 import pyodbc
 from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash
-from flask_login import login_required
+from flask_login import LoginManager, login_required
 
-conn = pyodbc.connect('DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
-cursor=conn.cursor()
+# TODO: need to figure out why can't Li install these two things.
+from forms import LoginForm, RegisterForm
+# from flask.ext.login import login_user, \
+#     login_required, logout_user
+
+conn = pyodbc.connect(
+    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
+cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
-for row in rows:
-    print row.GName
+# for row in rows:
+#   print row.GName
 
 app = Flask(__name__)
 
 
-@app.route("/", methods = ['GET', 'POST'])
+# Holds all the user objects for all users (ever?)
+users = []
+
+# Used for login management. Takes in the unicode ID of the user and
+# return the object associated with it.
+# @login_manager.user_loader
+# def load_user(user_id):
+#     for user in users:
+#         if (user.get_id() == user_id):
+#             return user
+#     return None
+
+
+@login_required
+@app.route("/", methods=['GET', 'POST'])
 def main():
     if (request.method == 'POST'):
-        return render_template('show_entries.html', entries=search()), showRecommendation()
+        # , showRecommendation()
+        return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         rows = showInfo()
         return render_template('show_entries.html', entries=rows, recommendations=rows)
+
 
 def showInfo():
     cursor.execute("SELECT * FROM Game")
     rows = cursor.fetchall()
     return rows
 
-@app.route("/login", methods=['GET'])
-@login_required
-def login():
-    print("should print sth")
-    # print(request.form['userName'])
-    # print(request.form['passWord'])
-    # cursor.execute("EXEC login " + request.form['userName'] + request.form['passWord'])
-    # result = cursor.fetchall()
-    # if (result == True):
-    #     pass
-    # else:
-    #     pass
-    return render_template('login.html')
 
+@app.route("/login/", methods=['GET', 'POST'])
+def login():
+    error = None
+    form = LoginForm(request.form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # TODO Fill in the parameter
+            cursor.execute('EXEC login ' +
+                           request.form['userName'] + request.form['passWord'])
+            r = cursor.fetchall()
+            if (r == 1):
+                return redirect('/')
+        else:
+            error = 'Invalid username or password.'
+    return render_template('login.html', form=form, error=error)
+
+
+@app.route("/register/", methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        #register the user into database
+        # cursor.execute('EXEC registerUser'+ request.form[''] + request.formp[]+request.form[])
+        r = cursor.fetchall()
+        # if (r == 'Successfully created user')
+            # return redirect('/')
+    return render_template('register.html', form=form)
+
+
+@app.route("/logout/", methods=['GET', 'POST'])
+def logout():
+    # logout_user()
+    flash('You were logged out.')
+    return redirect(url_for('home.welcome'))
+
+# TODO Help me I'm broken!
 def showRecommendation():
-    cursor.execute()
+    # The hardcoded arguments are just for testing
+    cursor.execute(
+        "DECLARE @results TABLE(g_id int NULL, m_id int NULL); EXEC recommendations 'kelleyld', 10, 1770; SELECT * FROM @results")
     return cursor.fetchall()
+
 
 def search():
     if request.form['submit'] == 'searchGame':
-       cursor.execute('EXEC searchGames ' + request.form['search'])
-       return cursor.fetchall()
+        cursor.execute('EXEC searchGames ' + request.form['search'])
+        return cursor.fetchall()
 
 if __name__ == "__main__":
+    app.secret_key = 'MySuperSecretPassword'
+    login_manager = LoginManager()
+    login_manager.init_app(app)
+    login_manager.login_view = 'login'
     app.run()

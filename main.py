@@ -7,15 +7,20 @@ from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash
 from flask_login import LoginManager, login_required
 
-conn = pyodbc.connect('DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
-cursor=conn.cursor()
+# TODO: need to figure out why can't Li install these two things.
+from forms import LoginForm, RegisterForm
+# from flask.ext.login import login_user, \
+#     login_required, logout_user
+
+conn = pyodbc.connect(
+    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
+cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
 # for row in rows:
 #   print row.GName
 
 app = Flask(__name__)
-
 
 
 # Holds all the user objects for all users (ever?)
@@ -30,40 +35,71 @@ users = []
 #             return user
 #     return None
 
+
 @login_required
-@app.route("/", methods = ['GET', 'POST'])
+@app.route("/", methods=['GET', 'POST'])
 def main():
     if (request.method == 'POST'):
-        return render_template('show_entries.html', entries=search())#, showRecommendation()
+        # , showRecommendation()
+        return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         rows = showInfo()
         return render_template('show_entries.html', entries=rows, recommendations=rows)
+
 
 def showInfo():
     cursor.execute("SELECT * FROM Game")
     rows = cursor.fetchall()
     return rows
 
+
 @app.route("/login/", methods=['GET', 'POST'])
 def login():
-    # cursor.execute("EXEC login " + request.form['userName'] + request.form['passWord'])
-    # result = cursor.fetchall()
-    # if (result == True):
-    #     print("Yay!")
-    # else:
-    #     print("Aww...")
-    return render_template('login.html')
+    error = None
+    form = LoginForm(request.form)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            # TODO Fill in the parameter
+            cursor.execute('EXEC login ' +
+                           request.form['userName'] + request.form['passWord'])
+            r = cursor.fetchall()
+            if (r == 1):
+                return redirect('/')
+        else:
+            error = 'Invalid username or password.'
+    return render_template('login.html', form=form, error=error)
+
+
+@app.route("/register/", methods=['GET', 'POST'])
+def register():
+    form = RegisterForm()
+    if form.validate_on_submit():
+        #register the user into database
+        # cursor.execute('EXEC registerUser'+ request.form[''] + request.formp[]+request.form[])
+        r = cursor.fetchall()
+        # if (r == 'Successfully created user')
+            # return redirect('/')
+    return render_template('register.html', form=form)
+
+
+@app.route("/logout/", methods=['GET', 'POST'])
+def logout():
+    # logout_user()
+    flash('You were logged out.')
+    return redirect(url_for('home.welcome'))
 
 # TODO Help me I'm broken!
 def showRecommendation():
     # The hardcoded arguments are just for testing
-    cursor.execute("DECLARE @results TABLE(g_id int NULL, m_id int NULL); EXEC recommendations 'kelleyld', 10, 1770; SELECT * FROM @results")
+    cursor.execute(
+        "DECLARE @results TABLE(g_id int NULL, m_id int NULL); EXEC recommendations 'kelleyld', 10, 1770; SELECT * FROM @results")
     return cursor.fetchall()
+
 
 def search():
     if request.form['submit'] == 'searchGame':
-       cursor.execute('EXEC searchGames ' + request.form['search'])
-       return cursor.fetchall()
+        cursor.execute('EXEC searchGames ' + request.form['search'])
+        return cursor.fetchall()
 
 if __name__ == "__main__":
     app.secret_key = 'MySuperSecretPassword'

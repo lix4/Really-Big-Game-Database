@@ -18,10 +18,12 @@ DECLARE @m_results TABLE (mod_id int, score smallint)
 
 IF @game_id <> 0
 BEGIN
+  -- Initialize convinince variables
   SELECT @g_studio = Studio, @g_esrb = ESRB, @g_gname = GName, @g_year = Year,
     @g_series = Series
   FROM Game WHERE Game_id = @game_id
-  
+
+  -- Add 10 to all games in the same series
   INSERT INTO @t_results (id, score)
     SELECT game_id, 10 FROM Game
     WHERE Game.game_id <> @game_id
@@ -32,6 +34,7 @@ BEGIN
 
   DELETE FROM @t_results
 
+  -- Add 5 to all games made by the same studio
   INSERT INTO @t_results (id, score)
     SELECT game_id, 5 FROM Game
     WHERE Game.game_id <> @game_id
@@ -63,5 +66,4 @@ INSERT INTO @results (mod_id, score)
   SELECT mod_id, score FROM @m_results
 
 SELECT TOP (@result_ct) game_id, mod_id FROM @results
-    ORDER BY -score
-GO
+  ORDER BY -score

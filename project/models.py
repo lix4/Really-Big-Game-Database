@@ -1,3 +1,12 @@
+class Review():
+     def __init__(self, title, description, author_id):
+        self.title = title
+        self.description = description
+        self.author_id = author_id
+     
+
+
+
 class User(UserMixin):
     def __init__(self, uname):
         self.uname = uname

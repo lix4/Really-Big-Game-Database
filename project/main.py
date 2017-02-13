@@ -9,13 +9,13 @@ from flask_login import login_user, logout_user, LoginManager, login_required
 from forms import LoginForm, RegisterForm
 
 conn = pyodbc.connect(
-    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
+    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=;PWD=') #replace your own id and password
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
 
 #---------------------IMPORTANT GLOBAL VARIABLE. DO NOT DELETE!!!!!-------
-current_userID = None
+current_user = None
 
 #-------------------------------------------------------------------------
 # for row in rows:
@@ -107,13 +107,6 @@ def search():
         cursor.execute('EXEC searchGames ' + request.form['search'])
         return cursor.fetchall()
 
-@app.route("/inside_post/", methods=['GET', 'POST'])
-def post_handler():
-    if (request.method == 'POST'):
-
-        # cursor.execute('EXEC createReview ')
-        redirect(url_for('/inside_post'))
-    return render_template('inside_post.html')
 
 if __name__ == "__main__":
     app.secret_key = 'MySuperSecretPassword'

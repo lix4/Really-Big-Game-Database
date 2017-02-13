@@ -1,15 +1,20 @@
 {% extends "layout.html" %} {% block left%}
 <div>
-    <p>{{Game.Studio}}</p>
-    <p>{{Game.ESRB}}</p>
-    <p>{{Game.GName}}</p>
-    <p>{{Game.Year}}</p>
-    <p>{{Game.Series}}</p>
-    <p>{{Game.Picture}}</p>
+    <p>{{Game.Studio|safe}}</p>
+    <p>{{Game.ESRB|safe}}</p>
+    <p>{{Game.GName|safe}}</p>
+    <p>{{Game.Year|safe}}</p>
+    <p>{{Game.Series|safe}}</p>
+    <p>{{Game.Picture|safe}}</p>
 </div>
 
 <ul>
-    <button type="submit">Write My Review</button> {% for review in reviews %}
+    <form>
+        <input type="text" name="paragraph">
+        <input type="text" name="rating">
+        <button type="submit">Write My Review</button>
+    </form>
+    {% for review in reviews %}
     <li>
         {{ review.Rating|safe }} {{ review.Text|safe }} {{review.Text|safe}} {{review.Uname|safe}}{% else %}
         <li>

@@ -1,0 +1,27 @@
+{% extends "layout.html" %} {% block left%}
+<div>
+    <p>{{Game.Studio}}</p>
+    <p>{{Game.ESRB}}</p>
+    <p>{{Game.GName}}</p>
+    <p>{{Game.Year}}</p>
+    <p>{{Game.Series}}</p>
+    <p>{{Game.Picture}}</p>
+</div>
+
+<ul>
+    <button type="submit">Write My Review</button> {% for review in reviews %}
+    <li>
+        {{ review.Rating|safe }} {{ review.Text|safe }} {{review.Text|safe}} {{review.Uname|safe}}{% else %}
+        <li>
+            <em>Unbelievable.  No entries here so far</em> {% endfor %}
+</ul>
+
+{% endblock %} {% block right%}
+<ul class="recommendations">
+    {% for entry in recommendations %}
+    <li>
+        <h2>{{ entry.GName }}</h2>
+        {{ entry.GName|safe }} {{ entry.Game_id|safe }} {% else %}
+        <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
+</ul>
+{% endblock %}

@@ -5,18 +5,19 @@
 import pyodbc
 from flask import Flask, request, session, g, redirect, \
     url_for, abort, render_template, flash
-from flask_login import LoginManager, login_required
-
-# TODO: need to figure out why can't Li install these two things.
+from flask_login import login_user, logout_user, LoginManager, login_required
 from forms import LoginForm, RegisterForm
-# from flask.ext.login import login_user, \
-#     login_required, logout_user
 
 conn = pyodbc.connect(
     'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
+
+#---------------------IMPORTANT GLOBAL VARIABLE. DO NOT DELETE!!!!!-------
+current_userID = None
+
+#-------------------------------------------------------------------------
 # for row in rows:
 #   print row.GName
 
@@ -64,6 +65,7 @@ def login():
                            request.form['userName'] + request.form['passWord'])
             r = cursor.fetchall()
             if (r == 1):
+                # TODO
                 return redirect('/')
         else:
             error = 'Invalid username or password.'
@@ -74,15 +76,19 @@ def login():
 def register():
     form = RegisterForm()
     if form.validate_on_submit():
-        #register the user into database
+        # register the user into database
+        print(form.username.data)
+        print(form.email.data)
+        print(form.password.data)
         # cursor.execute('EXEC registerUser'+ request.form[''] + request.formp[]+request.form[])
-        r = cursor.fetchall()
+        # r = cursor.fetchall()
         # if (r == 'Successfully created user')
-            # return redirect('/')
+        # return redirect('/')
     return render_template('register.html', form=form)
 
 
 @app.route("/logout/", methods=['GET', 'POST'])
+@login_required
 def logout():
     # logout_user()
     flash('You were logged out.')
@@ -100,6 +106,14 @@ def search():
     if request.form['submit'] == 'searchGame':
         cursor.execute('EXEC searchGames ' + request.form['search'])
         return cursor.fetchall()
+
+@app.route("/inside_post/", methods=['GET', 'POST'])
+def post_handler():
+    if (request.method == 'POST'):
+
+        # cursor.execute('EXEC createReview ')
+        redirect(url_for('/inside_post'))
+    return render_template('inside_post.html')
 
 if __name__ == "__main__":
     app.secret_key = 'MySuperSecretPassword'

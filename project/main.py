@@ -2,14 +2,15 @@
 # Make sure you install pyodbc and flask
 # launch the server, then go to localhost:5000
 
+from flask import (Flask, abort, flash, g, redirect, render_template, request,
+                   session, url_for)
+from flask_login import LoginManager, login_required, login_user, logout_user
+
 import pyodbc
-from flask import Flask, request, session, g, redirect, \
-    url_for, abort, render_template, flash
-from flask_login import login_user, logout_user, LoginManager, login_required
 from forms import LoginForm, RegisterForm
 
 conn = pyodbc.connect(
-    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.') #replace your own id and password
+    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')  # replace your own id and password
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()
@@ -95,26 +96,26 @@ def logout():
     return redirect(url_for('home.welcome'))
 
 # TODO Help me I'm broken!
+
+
 def showRecommendation():
     # The hardcoded arguments are just for testing
     cursor.execute(
         "DECLARE @results TABLE(g_id int NULL, m_id int NULL); EXEC recommendations 'kelleyld', 10, 1770; SELECT * FROM @results")
     return cursor.fetchall()
 
-@app.route("/inside_post/<Game_id>",methods=['GET','POST'])
+
+@app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
 def gameinfo(Game_id=0):
-    flash("safdsa")
-    flash(str(Game_id))
     if (request.method == 'POST'):
-        #, showRecommendation()
-       return render_template('show_entries.html', entries=search())
+        return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         # TODO: need to figure out how to grab data from database here.
         cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
-        rows=cursor.fetchall()
-        flash(str(rows))
+        rows = cursor.fetchall()
+        # flash("Name: " + str(rows[0][3]))
+        return render_template('inside_post.html', games=rows)
 
-    return render_template('inside_post.html', Game=rows)
 
 def search():
     if request.form['submit'] == 'searchGame':

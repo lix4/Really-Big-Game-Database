@@ -1,11 +1,9 @@
 {% extends "layout.html" %} {% block left%}
 <div>
-    <p>{{Game.Studio|safe}}</p>
-    <p>{{Game.ESRB|safe}}</p>
-    <p>{{Game.GName|safe}}</p>
-    <p>{{Game.Year|safe}}</p>
-    <p>{{Game.Series|safe}}</p>
-    <p>{{Game.Picture|safe}}</p>
+    {% for game in games %}
+        <p>{{ game.GName|safe }} {{ game.Studio|safe }} {{ game.ESRB|safe }} {{ game.Year|safe }} {{ game.Series|safe }}</p>
+        <img src="{{ game.Picture|safe }}" alt="Picture">
+    {% endfor %}
 </div>
 
 <ul>

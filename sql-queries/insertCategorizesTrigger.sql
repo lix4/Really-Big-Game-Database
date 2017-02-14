@@ -1,11 +1,15 @@
 CREATE TRIGGER insertCategorizesTrigger ON Categorizes
-FOR INSERT
+AFTER INSERT
 AS
 
+DECLARE @r_ids TABLE (R_id int NOT NULL)
 DECLARE @r_id int
 
-DECLARE insertedCursor CURSOR LOCAL FOR
+INSERT INTO @r_ids (R_id)
   SELECT R_id FROM Inserted
+
+DECLARE insertedCursor CURSOR LOCAL FOR
+  SELECT R_id FROM @r_ids
 OPEN insertedCursor
 
 FETCH NEXT FROM insertedCursor INTO @r_id

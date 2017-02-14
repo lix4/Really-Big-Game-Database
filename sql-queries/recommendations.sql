@@ -13,7 +13,7 @@ DECLARE @g_series char(50)
 
 DECLARE @t_score_sum TABLE (id int, score smallint)
 DECLARE @t_results TABLE (id int, score smallint)
-DECLARE @g_results TABLE (game_id int, score smallint)
+CREATE TABLE #g_results (game_id int, score smallint)
 DECLARE @m_results TABLE (mod_id int, score smallint)
 
 IF @game_id <> 0
@@ -29,38 +29,19 @@ BEGIN
     WHERE Game.game_id <> @game_id
       AND Game.Series = @g_series
 
-  INSERT INTO @g_results (game_id, score)
+  INSERT INTO #g_results (game_id, score)
     SELECT id, score FROM @t_results
 
   DELETE FROM @t_results
 
   -- Add 5 to all games made by the same studio
-  INSERT INTO @t_results (id, score)
-    SELECT game_id, 5 FROM Game
-    WHERE Game.game_id <> @game_id
-      AND CONTAINS(Game.Studio, @g_studio)
-
-  INSERT INTO @t_score_sum (id, score)
-    SELECT g.game_id, g.score + t.score
-      FROM @g_results AS g, @t_results AS t
-      WHERE g.game_id = t.id
-
-  DELETE FROM @t_results
-    WHERE id IN (SELECT id FROM @t_score_sum)
-
-  DELETE FROM @g_results
-    WHERE game_id IN (SELECT id FROM @t_score_sum)
-
-  INSERT INTO @g_results (game_id, score)
-    SELECT id, score FROM @t_score_sum
-    UNION
-    SELECT id, score FROM @t_results
+  EXEC addGamesSharingStudio @game_id, 5
 END
 
 DECLARE @results TABLE (game_id int NULL, mod_id int NULL, score smallint)
 
 INSERT INTO @results (game_id, score)
-  SELECT game_id, score FROM @g_results
+  SELECT game_id, score FROM #g_results
 
 INSERT INTO @results (mod_id, score)
   SELECT mod_id, score FROM @m_results

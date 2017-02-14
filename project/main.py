@@ -96,8 +96,6 @@ def logout():
     return redirect(url_for('home.welcome'))
 
 # TODO Help me I'm broken!
-
-
 def showRecommendation():
     # The hardcoded arguments are just for testing
     cursor.execute(
@@ -108,20 +106,22 @@ def showRecommendation():
 @app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
 def gameinfo(Game_id=0):
     if (request.method == 'POST'):
-        return render_template('show_entries.html', entries=search())
+        # paragraph = request.form['paragraph']
+        # rating = request.form['rating']
+        # cursor.execute()
+        return render_template('show_entries.html')
     elif (request.method == 'GET'):
-        # TODO: need to figure out how to grab data from database here.
         cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
         rows = cursor.fetchall()
-        # flash("Name: " + str(rows[0][3]))
-        return render_template('inside_post.html', games=rows)
+        cursor.execute('SELECT * FROM REVIEW WHERE Game_id = ' + str(Game_id))
+        reviews = cursor.fetchall()
+        return render_template('inside_post.html', games=rows, comments=reviews)
 
 
 def search():
     if request.form['submit'] == 'searchGame':
         cursor.execute('EXEC searchGames \'' + request.form['search'] + '\'')
         return cursor.fetchall()
-
 
 if __name__ == "__main__":
     app.secret_key = 'MySuperSecretPassword'

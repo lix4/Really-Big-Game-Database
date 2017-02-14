@@ -1,25 +1,48 @@
-{% extends "layout.html" %} {% block left%}
+{% extends "layout.html" %} 
+{% block left%}
+<hr>
 <div>
-    {% for game in games %}
-        <p>{{ game.GName|safe }} {{ game.Studio|safe }} {{ game.ESRB|safe }} {{ game.Year|safe }} {{ game.Series|safe }}</p>
-        <img src="{{ game.Picture|safe }}" alt="Picture">
-    {% endfor %}
+{% for game in games %}
+    <h2>{{ game.GName|safe }}</h2>
+    <p>Studio: {{ game.Studio|safe }}</p>
+    <p>ESRB: {{ game.ESRB|safe }}</p>
+    <p>Year: {{ game.Year|safe }}</p>
+    <p>Series: {{ game.Series|safe }}</p>
+    <img src="{{ game.Picture|safe }}" alt="Picture"> 
+{% endfor %}
 </div>
 
+<h3>Review</h3>
 <ul>
     <form>
         <input type="text" name="paragraph">
         <input type="text" name="rating">
         <button type="submit">Write My Review</button>
     </form>
-    {% for review in reviews %}
-    <li>
-        {{ review.Rating|safe }} {{ review.Text|safe }} {{review.Text|safe}} {{review.Uname|safe}}{% else %}
-        <li>
-            <em>Unbelievable.  No entries here so far</em> {% endfor %}
+    {% for comment in comments %}
+         
+         <!--<li>{{ comment.Rating|safe }}
+             {{ comment.Text|safe }}
+             {{ comment.Text|safe }}
+             {{ comment.Uname|safe }}
+             <input type="submit" name="dButton" value="Delete">
+             <input type="submit" name="eButton" value="Edit">
+         </li>-->
+         {% if comment %}
+         <li>
+             {{ comment.Rating|safe }}
+             {{ comment.Text|safe }}
+             {{ comment.Text|safe }}
+             {{ comment.Uname|safe }}
+         </li>
+         {% else %}
+         <em>Unbelievable.  No entries here so far</em> 
+         {% endif %}
+     {% endfor %}
 </ul>
+{% endblock %} 
 
-{% endblock %} {% block right%}
+{% block right%}
 <ul class="recommendations">
     {% for entry in recommendations %}
     <li>

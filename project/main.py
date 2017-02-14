@@ -101,6 +101,20 @@ def showRecommendation():
         "DECLARE @results TABLE(g_id int NULL, m_id int NULL); EXEC recommendations 'kelleyld', 10, 1770; SELECT * FROM @results")
     return cursor.fetchall()
 
+@app.route("/inside_post/<Game_id>",methods=['GET','POST'])
+def gameinfo(Game_id=0):
+    flash("safdsa")
+    flash(str(Game_id))
+    if (request.method == 'POST'):
+        #, showRecommendation()
+       return render_template('show_entries.html', entries=search())
+    elif (request.method == 'GET'):
+        # TODO: need to figure out how to grab data from database here.
+        cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
+        rows=cursor.fetchall()
+        flash(str(rows))
+
+    return render_template('inside_post.html', Game=rows)
 
 def search():
     if request.form['submit'] == 'searchGame':

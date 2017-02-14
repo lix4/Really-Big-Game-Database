@@ -9,7 +9,7 @@ from flask_login import login_user, logout_user, LoginManager, login_required
 from forms import LoginForm, RegisterForm
 
 conn = pyodbc.connect(
-    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=;PWD=') #replace your own id and password
+    'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.') #replace your own id and password
 cursor = conn.cursor()
 cursor.execute("SELECT * FROM Game")
 rows = cursor.fetchall()

@@ -1,6 +1,5 @@
-ALTER PROCEDURE createReview
+CREATE PROCEDURE createReview
   @uname char(25),
-  @pass char(30),
   @rating smallint,
   @game_id int,
   @mod_id int,
@@ -20,17 +19,11 @@ AS
     RETURN
   END
   DECLARE @validLogin BIT
-  EXECUTE login @uname, @pass, @validLogin OUTPUT
-  IF @validLogin = 0
-  BEGIN
-    SET @result = 'Invalid login'
-    RETURN
-  END
   IF EXISTS (SELECT *
                FROM Review
                WHERE Uname = @uname
-                 AND Game_id = @game_id
-                 AND Mod_id = @mod_id)
+                 AND (Game_id = @game_id
+                      OR Mod_id = @mod_id))
   BEGIN
     SET @result = 'You have already posted a review on this game/mod'
     RETURN

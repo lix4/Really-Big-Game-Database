@@ -67,7 +67,7 @@ def main():
         return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         rows = showInfo()
-        return render_template('show_entries.html', entries=rows, recommendations=rows)
+        return render_template('show_entries.html', entries=rows, recommendations=showRecommendation())
 
 
 def showInfo():
@@ -133,28 +133,27 @@ def logout():
 # TODO Help me I'm broken!
 def showRecommendation():
     # The hardcoded arguments are just for testing
-    cursor.execute("""DECLARE @ret TABLE(gid int, mid int)
-                      INSERT INTO @ret EXEC recommendations 'kelleyld', 10, 1770
-                      SELECT @ret""")
+    cursor.execute("EXEC recommendations 'kelleyld', 10, 1770")
     return cursor.fetchall()
 
 
 @app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
 def gameinfo(Game_id=0):
     if (request.method == 'POST'):
-        # Hard code uname "Smith"
         if (request.form['submit'] == 'add'):
-            uname = current_user.get_id()
+            uname = str(current_user.get_id())
             paragraph = request.form['paragraph']
             rating = request.form['rating']
             tag = request.form['tags']
-            command = """DECLARE @output VARCHAR(255)
-                         EXEC createReview '%s', %s, %s, 0, '%s', '%s', @output OUTPUT
-                         SELECT @output""" % (uname, rating, Game_id, paragraph, tag)
+            command = """\
+DECLARE @output VARCHAR(255);
+EXEC createReview '%s', %s, %s, 0, '%s', '%s', @output OUTPUT;
+SELECT @output;""" % (uname, rating, Game_id, paragraph, tag)
             sys.stdout.write(command + "\n")
             sys.stdout.flush()
             cursor.execute(command)
             sys.stdout.write(str(cursor.fetchall()))
+            sys.stdout.flush()
         elif (request.form['submit'] == 'searchGame'):
             result = search()
             return render_template('show_entries.html', entries=result, recommendations=result)
@@ -165,7 +164,7 @@ def gameinfo(Game_id=0):
     if (Game_id.isdigit()):
         cursor.execute("""SELECT * FROM Review WHERE Game_id = %s""" % Game_id)
     reviews = cursor.fetchall()
-    return render_template('inside_post.html', games=rows, comments=reviews)
+    return render_template('inside_post.html', games=rows, comments=reviews, logged_in=(str(current_user.get_id()) != 'None'))
 
 
 def search():

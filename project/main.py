@@ -144,19 +144,22 @@ def gameinfo(Game_id=0):
     if (request.method == 'POST'):
         # Hard code uname "Smith"
         if (request.form['submit'] == 'add'):
-            print('here')
-            uname = "Smith"
+            uname = flask_login.current_user.get_id()
             paragraph = request.form['paragraph']
             rating = request.form['rating']
             tag = request.form['tags']
-            cursor.execute('DECLARE @output VARCHAR(255); EXEC createReview \'' + uname + '\',' + rating + ',' + Game_id+ ',' + 0 + ', \'' + paragraph + '\', \'' + tag + '\', ' + '@output OUTPUT')
+            command = """DECLARE @output VARCHAR(255)
+                         EXEC createReview '%s', %d, %d, 0, '%s', '%s', @output OUTPUT""" % uname, rating, Game_id, paragraph, tag
+            cursor.execute(command)
         elif (request.form['submit'] == 'searchGame'):
             result = search()
             return render_template('show_entries.html', entries=result, recommendations=result)
     #elif (request.method == 'GET'):
-    cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
+    if (Game_id.isdigit()):
+        cursor.execute("""SELECT * FROM Game WHERE Game_id = %s""" % Game_id)
     rows = cursor.fetchall()
-    cursor.execute('SELECT * FROM REVIEW WHERE Game_id = ' + str(Game_id))
+    if (Game_id.isdigit()):
+        cursor.execute("""SELECT * FROM Review WHERE Game_id = %s""" % Game_id)
     reviews = cursor.fetchall()
     return render_template('inside_post.html', games=rows, comments=reviews)
 

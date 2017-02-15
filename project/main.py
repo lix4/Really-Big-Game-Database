@@ -142,16 +142,23 @@ def showRecommendation():
 @app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
 def gameinfo(Game_id=0):
     if (request.method == 'POST'):
-        # paragraph = request.form['paragraph']
-        # rating = request.form['rating']
-        # cursor.execute()
-        return render_template('show_entries.html')
-    elif (request.method == 'GET'):
-        cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
-        rows = cursor.fetchall()
-        cursor.execute('SELECT * FROM REVIEW WHERE Game_id = ' + str(Game_id))
-        reviews = cursor.fetchall()
-        return render_template('inside_post.html', games=rows, comments=reviews)
+        # Hard code uname "Smith"
+        if (request.form['submit'] == 'add'):
+            print('here')
+            uname = "Smith"
+            paragraph = request.form['paragraph']
+            rating = request.form['rating']
+            tag = request.form['tags']
+            cursor.execute('DECLARE @output VARCHAR(255); EXEC createReview \'' + uname + '\',' + rating + ',' + Game_id+ ',' + 0 + ', \'' + paragraph + '\', \'' + tag + '\', ' + '@output OUTPUT')
+        elif (request.form['submit'] == 'searchGame'):
+            result = search()
+            return render_template('show_entries.html', entries=result, recommendations=result)
+    #elif (request.method == 'GET'):
+    cursor.execute('SELECT * From Game Where Game_id = ' + str(Game_id))
+    rows = cursor.fetchall()
+    cursor.execute('SELECT * FROM REVIEW WHERE Game_id = ' + str(Game_id))
+    reviews = cursor.fetchall()
+    return render_template('inside_post.html', games=rows, comments=reviews)
 
 
 def search():

@@ -5,7 +5,7 @@
 import sys
 from flask import (Flask, abort, flash, g, redirect, render_template, request,
                    session, url_for)
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 
 import pyodbc
 from forms import LoginForm, RegisterForm
@@ -144,13 +144,17 @@ def gameinfo(Game_id=0):
     if (request.method == 'POST'):
         # Hard code uname "Smith"
         if (request.form['submit'] == 'add'):
-            uname = flask_login.current_user.get_id()
+            uname = current_user.get_id()
             paragraph = request.form['paragraph']
             rating = request.form['rating']
             tag = request.form['tags']
             command = """DECLARE @output VARCHAR(255)
-                         EXEC createReview '%s', %d, %d, 0, '%s', '%s', @output OUTPUT""" % uname, rating, Game_id, paragraph, tag
+                         EXEC createReview '%s', %s, %s, 0, '%s', '%s', @output OUTPUT
+                         SELECT @output""" % (uname, rating, Game_id, paragraph, tag)
+            sys.stdout.write(command + "\n")
+            sys.stdout.flush()
             cursor.execute(command)
+            sys.stdout.write(str(cursor.fetchall()))
         elif (request.form['submit'] == 'searchGame'):
             result = search()
             return render_template('show_entries.html', entries=result, recommendations=result)

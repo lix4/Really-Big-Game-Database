@@ -8,7 +8,7 @@
     <p>ESRB: {{ game.ESRB|safe }}</p>
     <p>Year: {{ game.Year|safe }}</p>
     <p>Series: {{ game.Series|safe }}</p>
-    <img src="{{ game.Picture|safe }}" alt="Picture"> 
+    <img src="{{ game.Picture|safe }}" alt="Picture" width="700" height="500"> 
 {% endfor %}
 </div>
 
@@ -17,7 +17,9 @@
     <form>
         <input type="text" name="paragraph">
         <input type="text" name="rating">
-        <button type="submit">Write My Review</button>
+        <label for="tags">Please specify tags sperated by ", "</label>
+        <input type="text" name="tags">
+        <input type="submit" name="submit" value="add">Write My Review</input>
     </form>
     {% for comment in comments %}
          
@@ -30,10 +32,9 @@
          </li>-->
          {% if comment %}
          <li>
-             {{ comment.Rating|safe }}
-             {{ comment.Text|safe }}
-             {{ comment.Text|safe }}
-             {{ comment.Uname|safe }}
+             <p><strong>Rating:</strong> {{ comment.Rating|safe }}</p>
+             <p>{{ comment.Text|safe }}</p>
+             <p>             -----{{ comment.Uname|safe }}</p>
          </li>
          {% else %}
          <em>Unbelievable.  No entries here so far</em> 

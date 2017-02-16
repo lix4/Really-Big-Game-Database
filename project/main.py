@@ -79,7 +79,8 @@ def update_alias():
         new_alias = request.form['new_alias']
         cursor.execute("UPDATE Users SET alias='" + new_alias + "' WHERE Uname='" + current_user.get_id() + "'")
         main()
-    return render_template('update_alias.html', temp=current_user.get_alias())
+    cursor.execute("SELECT GName, Game_id FROM Likes, Game WHERE Likes.Game_id = Game.Game_id AND Uname = '" + str(current_user.get_id()) + "'")
+    return render_template('update_alias.html', temp=current_user.get_alias(), likes=cursor.fetchall())
 
 def showInfo():
     cursor.execute("SELECT TOP(20) * FROM Game")
@@ -151,7 +152,7 @@ def register():
 @app.route("/logout/", methods=['GET', 'POST'])
 @login_required
 def logout():
-    # logout_user()
+    logout_user()
     flash('You were logged out.')
     return redirect(url_for('home.welcome'))
 

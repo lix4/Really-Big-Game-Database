@@ -67,6 +67,8 @@ def load_user(user_id):
 @login_required
 @app.route("/", methods=['GET', 'POST'])
 def main():
+    if (str(current_user.get_id()) == None):
+        flash("You can not loged in!!!!!!!!!!")
     if (request.method == 'POST'):
         return render_template('show_entries.html', entries=search(), recommendations=showRecommendation())
     elif (request.method == 'GET'):
@@ -77,8 +79,14 @@ def main():
 def update_alias():
     if request.method == 'POST':
         new_alias = request.form['new_alias']
-        cursor.execute("UPDATE Users SET alias='" + new_alias + "' WHERE Uname='" + current_user.get_id() + "'")
-        main()
+        cursor.execute("""set nocount on
+                          UPDATE Users SET alias='%s' 
+                          WHERE Uname='%s'""" % (new_alias, str(current_user.get_id())))
+        sys.stdout.write("""set nocount on
+                          UPDATE Users SET alias='%s' 
+                          WHERE Uname='%s'""" % (new_alias, str(current_user.get_id())))
+        sys.stdout.flush()
+        return redirect(url_for('main'))
     return render_template('update_alias.html', temp=current_user.get_alias())
 
 def showInfo():
@@ -173,6 +181,19 @@ def showRecommendation():
 
 @app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
 def gameinfo(Game_id='0'):
+    if (Game_id.isdigit()):
+        cursor.execute("""SELECT * FROM Game WHERE Game_id = %s""" % Game_id)
+    rows = cursor.fetchall()
+    if (Game_id.isdigit()):
+        cursor.execute("""SELECT * FROM Review WHERE Game_id = %s""" % Game_id)
+    reviews = cursor.fetchall()
+    if (Game_id.isdigit()):
+        cursor.execute("""SELECT R_id from Review where Uname='%s' and Game_id=%s""" % (str(current_user.get_id()), Game_id))
+    review_id = cursor.fetchone()
+    if (review_id):
+        review_id = review_id[0]
+    else:
+        review_id = 0
     if (request.method == 'POST'):
         if (request.form['submit'] == 'add'):
             uname = str(current_user.get_id())
@@ -183,33 +204,25 @@ def gameinfo(Game_id='0'):
                          DECLARE @output VARCHAR(255);
                          EXEC createReview '%s', %s, %s, 0, '%s', '%s', @output OUTPUT;
                          SELECT @output;""" % (uname, rating, Game_id, paragraph, tag)
-            sys.stdout.write(command + "\n")
-            sys.stdout.flush()
             cursor.execute(command)
-            sys.stdout.write(str(cursor.fetchall()))
-            sys.stdout.flush()
         elif (request.form['submit'] == 'searchGame'):
             result = search()
-            return render_template('show_entries.html', entries=result, recommendations=result)
-        elif (request.form['dButton'] == 'Delete'):
-            command = """DECLARE @output VARCHAR(255)
+            return render_template('show_entries.html', entries=result, recommendations=result, alias=current_user.get_alias())
+        elif (request.form['submit'] == 'Delete'):
+            command = """set nocount on
+                         DECLARE @output VARCHAR(255)
                          EXEC deleteReview '%s', %s, @output OUTPUT
-                         SELECT @output""" % (uname, Game_id)
+                         SELECT @output""" % (str(current_user.get_id()), Game_id)
             cursor.execute(command)
             r = cursor.fetchall()
-            if (r == 'Sucess'):
-                pass
-            elif (r == 'No legal review'):
-                pass
+            if (r[0] == 'Successfully deleted review.'):
+                return render_template('inside_post.html', games=rows, comments=reviews, review_id=int(review_id), logged_in=(str(current_user.get_id()) != 'None'))
+            elif (r == 'No legal review.'):
+                flash('Fail to delete!!!!!!!!!!')
     #elif (request.method == 'GET'):
-    if (Game_id.isdigit()):
-        cursor.execute("""SELECT * FROM Game WHERE Game_id = %s""" % Game_id)
-    rows = cursor.fetchall()
-    if (Game_id.isdigit()):
-        cursor.execute("""SELECT * FROM Review WHERE Game_id = %s""" % Game_id)
-    reviews = cursor.fetchall()
-    return render_template('inside_post.html', games=rows, comments=reviews, uname = current_user.get_id(), logged_in=(str(current_user.get_id()) != 'None'))
-      
+    return render_template('inside_post.html', games=rows, comments=reviews, review_id=int(review_id), logged_in=(str(current_user.get_id()) != 'None'))
+
+
 def search():
     if request.form['submit'] == 'searchGame':
         cursor.execute('EXEC searchGames \'' + request.form['search'] + '\'')

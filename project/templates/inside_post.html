@@ -26,19 +26,18 @@
     Please log in to post a review for this game.
     {% endif %}
     {% for comment in comments %}
-         {% if comment.Uname == uname %}
+         {% if comment.R_id == review_id %}
          <li>{{ comment.Rating|safe }}
              {{ comment.Text|safe }}
-             {{ comment.Text|safe }}
-             {{ comment.Uname|safe }}
-             <input type="submit" name="dButton" value="Delete">
-             <input type="submit" name="eButton" value="Edit">
+             <form method=post>
+                  <input type="submit" name="submit" value="Delete"></input>
+             </form>
          </li>
-         {% elif comment %}
+         {% elif comment.R_id != review_id %}
          <li>
              <p><strong>Rating:</strong> {{ comment.Rating|safe }}</p>
              <p>{{ comment.Text|safe }}</p>
-             <p>             -----{{ comment.Uname|safe }}</p>
+             <p>             -{{ comment.Uname|safe }}</p>
          </li>
          {% else %}
          <em>Unbelievable.  No entries here so far</em> 

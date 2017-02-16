@@ -1,4 +1,10 @@
-{% extends "layout.html" %} {% block left %}
+{% extends "layout.html" %}
+
+{% block alias %}
+<a href=".\update_alias.html">{% alias|safe %}</a>
+{% endblock %}
+
+{% block left %}
 <table>
   <tr>
     <td>

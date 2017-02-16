@@ -13,9 +13,11 @@ from forms import LoginForm, RegisterForm
 class User:
     __tablename__ = "Users"
     UName = ""
+    Alias = ""
 
-    def __init__(self, UName):
+    def __init__(self, UName, Alias):
         self.UName = UName
+        self.Alias = Alias
 
     def is_authenticated(self):
         return True
@@ -28,6 +30,9 @@ class User:
 
     def get_id(self):
         return unicode(self.UName)
+
+    def get_alias(self):
+        return self.Alias
 
 conn = pyodbc.connect(
     'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')  # replace your own id and password
@@ -67,8 +72,15 @@ def main():
         return render_template('show_entries.html', entries=search())
     elif (request.method == 'GET'):
         rows = showInfo()
-        return render_template('show_entries.html', entries=rows, recommendations=rows)
+        return render_template('show_entries.html', entries=rows, recommendations=rows, alias=current_user.get_alias())
 
+@app.route("/update_alias/", methods=['GET', 'POST'])
+def update_alias():
+    if request.method == 'POST':
+        new_alias = request.form['new_alias']
+        cursor.execute("UPDATE Users SET alias='" + new_alias + "' WHERE Uname='" + current_user.get_id() + "'")
+        main()
+    return render_template('update_alias.html', temp=current_user.get_alias())
 
 def showInfo():
     cursor.execute("SELECT TOP(20) * FROM Game")
@@ -92,8 +104,10 @@ def login():
         if r[0][0] != 1:
             flash('Username or Password is invalid', 'error')
             return redirect(url_for('login'))
-
-        users.append(User(UName))
+        
+        cursor.execute("SELECT Alias From Users where Uname = '" + UName + "'")
+        temp_alias = cursor.fetchone()
+        users.append(User(UName, temp_alias))
         login_user(users[-1])
         flash('Successfully logged in')
         return redirect(request.args.get('next') or url_for('main'))
@@ -165,6 +179,16 @@ def gameinfo(Game_id=0):
         elif (request.form['submit'] == 'searchGame'):
             result = search()
             return render_template('show_entries.html', entries=result, recommendations=result)
+        elif (request.form['dButton'] == 'Delete'):
+            command = """DECLARE @output VARCHAR(255)
+                         EXEC deleteReview '%s', %s, @output OUTPUT
+                         SELECT @output""" % (uname, Game_id)
+            cursor.execute(command)
+            r = cursor.fetchall()
+            if (r == 'Sucess'):
+                pass
+            elif (r == 'No legal review'):
+                pass
     #elif (request.method == 'GET'):
     if (Game_id.isdigit()):
         cursor.execute("""SELECT * FROM Game WHERE Game_id = %s""" % Game_id)
@@ -172,7 +196,7 @@ def gameinfo(Game_id=0):
     if (Game_id.isdigit()):
         cursor.execute("""SELECT * FROM Review WHERE Game_id = %s""" % Game_id)
     reviews = cursor.fetchall()
-    return render_template('inside_post.html', games=rows, comments=reviews)
+    return render_template('inside_post.html', games=rows, comments=reviews, uname = current_user.get_id())
 
 
 def search():

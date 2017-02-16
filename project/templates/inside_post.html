@@ -27,8 +27,9 @@
     {% endif %}
     {% for comment in comments %}
          {% if comment.R_id == review_id %}
-         <li>{{ comment.Rating|safe }}
-             {{ comment.Text|safe }}
+         <li><p><strong>Rating:</strong> {{ comment.Rating|safe }}</p>
+             <p>{{ comment.Text|safe }}</p>
+             <p>             -{{ comment.Uname|safe }}</p>
              <form method=post>
                   <input type="submit" name="submit" value="Delete"></input>
              </form>

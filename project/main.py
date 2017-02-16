@@ -116,17 +116,22 @@ def register():
         alias = request.form['alias']
         sys.stdout.write(password)
         sys.stdout.write(alias)
-        command = """DECLARE @output VARCHAR(255)
+        command = """SET NOCOUNT ON
+        DECLARE @output VARCHAR(255)
                      EXEC registerUser '%s', '%s', '%s', @output OUTPUT
                      SELECT @output""" % (uname, password, alias)
         sys.stdout.write(command + "\n")
         sys.stdout.flush()
         cursor.execute(command)
         result = cursor.fetchall()
-        if (result == 'That username has already been used.'):
-            flash('That username has already been used.')
+        sys.stdout.write(str(result))
+        sys.stdout.flush()
+        if (result == '1'):
+            sys.stdout.write('Successfully created user.')
+            sys.stdout.flush()
         else:
-            flash(result == 'Successfully created user')
+            sys.stdout.write('That username has already been used.')
+            sys.stdout.flush()
     return render_template('register.html')
 
 

@@ -40,6 +40,10 @@ AS
     INSERT INTO Review (Uname, Rating, Text, Game_id)
       VALUES (@uname, @rating, @text, @game_id);
     SET @result = 'Game review Posted'
+
+    IF @rating > 2
+      INSERT INTO Likes (Uname, Game_id)
+        VALUES (@uname, @game_id)
   END
 
   -- Use string manipulation magic to form a table of tags from the

@@ -81,8 +81,8 @@ def update_alias():
         new_alias = request.form['new_alias']
         cursor.execute("UPDATE Users SET alias='" + new_alias + "' WHERE Uname='" + current_user.get_id() + "'")
         main()
-    cursor.execute("SELECT GName, Game_id FROM Likes, Game WHERE Likes.Game_id = Game.Game_id AND Uname = '" + str(current_user.get_id()) + "'")
-    return render_template('update_alias.html', temp=current_user.get_alias(), likes=cursor.fetchall())
+    #cursor.execute("SELECT GName, Game_id FROM Likes, Game WHERE Likes.Game_id = Game.Game_id AND Uname = '" + str(current_user.get_id()) + "'")
+    return render_template('update_alias.html', temp=current_user.get_alias())
 
 def showInfo():
     cursor.execute("SELECT TOP(20) * FROM Game")

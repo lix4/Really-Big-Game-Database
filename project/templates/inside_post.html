@@ -26,7 +26,7 @@
     Please log in to post a review for this game.
     {% endif %}
     {% for comment in comments %}
-         {% if comment.Uname = uname %}
+         {% if comment.Uname == uname %}
          <li>{{ comment.Rating|safe }}
              {{ comment.Text|safe }}
              {{ comment.Text|safe }}

@@ -80,7 +80,6 @@ def login():
     error = None
     # form = LoginForm(request.form)
     if request.method == 'POST':
-#        if form.validate_on_submit():
         UName = request.form['username']
         Password = request.form['password']
         command = """DECLARE @valid smallint
@@ -110,17 +109,25 @@ def login():
 
 @app.route("/register/", methods=['GET', 'POST'])
 def register():
-    form = RegisterForm()
-    if form.validate_on_submit():
-        # register the user into database
-        print(form.username.data)
-        print(form.email.data)
-        print(form.password.data)
-        # cursor.execute('EXEC registerUser'+ request.form[''] + request.formp[]+request.form[])
-        # r = cursor.fetchall()
-        # if (r == 'Successfully created user')
-        # return redirect('/')
-    return render_template('register.html', form=form)
+    if request.method == 'POST':
+        uname = request.form['username']
+        sys.stdout.write(uname)
+        password = request.form['password']
+        alias = request.form['alias']
+        sys.stdout.write(password)
+        sys.stdout.write(alias)
+        command = """DECLARE @output VARCHAR(255)
+                     EXEC registerUser '%s', '%s', '%s', @output OUTPUT
+                     SELECT @output""" % (uname, password, alias)
+        sys.stdout.write(command + "\n")
+        sys.stdout.flush()
+        cursor.execute(command)
+        result = cursor.fetchall()
+        if (result == 'That username has already been used.'):
+            flash('That username has already been used.')
+        else:
+            flash(result == 'Successfully created user')
+    return render_template('register.html')
 
 
 @app.route("/logout/", methods=['GET', 'POST'])

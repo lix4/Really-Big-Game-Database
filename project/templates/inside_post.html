@@ -14,6 +14,7 @@
 
 <h3>Review</h3>
 <ul>
+  {% if logged_in %}
     <form method=post>
         <input type="text" name="paragraph" placeholder="text">
         <input type="text" name="rating" placeholder="rating">
@@ -21,16 +22,19 @@
         <input type="text" name="tags">
         <input type="submit" name="submit" value="add">Write My Review</input>
     </form>
+    {% else %}
+    Please log in to post a review for this game.
+    {% endif %}
     {% for comment in comments %}
-         
-         <!--<li>{{ comment.Rating|safe }}
+         {% if comment.Uname == uname %}
+         <li>{{ comment.Rating|safe }}
              {{ comment.Text|safe }}
              {{ comment.Text|safe }}
              {{ comment.Uname|safe }}
              <input type="submit" name="dButton" value="Delete">
              <input type="submit" name="eButton" value="Edit">
-         </li>-->
-         {% if comment %}
+         </li>
+         {% elif comment %}
          <li>
              <p><strong>Rating:</strong> {{ comment.Rating|safe }}</p>
              <p>{{ comment.Text|safe }}</p>

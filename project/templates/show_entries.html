@@ -1,7 +1,13 @@
-{% extends "layout.html" %} {% block left %}
+{% extends "layout.html" %}
+
+{% block alias_block %}
+<a href=".\update_alias.html">{{ alias|safe }}</a>
+{% endblock %}
+
+{% block left %}
 <table>
   <tr>
-    <td>
+    <td valign="top">
       <ul class=entries>
         {% for entry in entries %}
         <li>
@@ -12,7 +18,7 @@
           <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
       </ul>
     </td>
-    <td>
+    <td valign="top">
       <ul class="recommendations">
         {% for entry in recommendations %}
         <li>
@@ -22,7 +28,7 @@
       </ul>
 
     </td>
-    <td>
+    <td valign="top">
       <ul class="Comments">
         {% for entry in Comments %}
         <li>

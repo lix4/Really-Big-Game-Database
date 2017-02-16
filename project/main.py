@@ -63,8 +63,7 @@ def load_user(user_id):
 @app.route("/", methods=['GET', 'POST'])
 def main():
     if (request.method == 'POST'):
-        #, showRecommendation()
-        return render_template('show_entries.html', entries=search())
+        return render_template('show_entries.html', entries=search(), recommendations=showRecommendation())
     elif (request.method == 'GET'):
         rows = showInfo()
         return render_template('show_entries.html', entries=rows, recommendations=showRecommendation())
@@ -137,15 +136,24 @@ def logout():
     flash('You were logged out.')
     return redirect(url_for('home.welcome'))
 
-# TODO Help me I'm broken!
 def showRecommendation():
     # The hardcoded arguments are just for testing
-    cursor.execute("EXEC recommendations 'kelleyld', 10, 1770")
+    command = """SET NOCOUNT ON
+DECLARE @ret TABLE (gid int, mid int)
+INSERT INTO @ret EXEC recommendations '%s', 10, """ % (current_user.get_id())
+    if request.method == 'POST' and 'submit' in request.form and request.form['submit'] == 'searchGame':
+        sys.stdout.write('Found search key ' + request.form['search'])
+        sys.stdout.flush()
+        cursor.execute("EXEC searchGames'" + request.form['search'] + "'")
+        command = command + str(cursor.fetchone().Game_id)
+    else:
+        command = command + '0'
+    cursor.execute(command + """\nSELECT GName FROM @ret, Game WHERE Game_id = gid""")
     return cursor.fetchall()
 
 
 @app.route("/inside_post/<Game_id>", methods=['GET', 'POST'])
-def gameinfo(Game_id=0):
+def gameinfo(Game_id='0'):
     if (request.method == 'POST'):
         if (request.form['submit'] == 'add'):
             uname = str(current_user.get_id())

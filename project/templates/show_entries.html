@@ -28,16 +28,6 @@
       </ul>
 
     </td>
-    <td valign="top">
-      <ul class="Comments">
-        {% for entry in Comments %}
-        <li>
-          <h2>{{ entry.GName }}</h2>
-          {{ entry.GName|safe }} {{ entry.Game_id|safe }} {% else %}
-          <li><em>Unbelievable.  No entries here so far</em> {% endfor %}
-      </ul>
-
-    </td>
   </tr>
 </table>
 {% endblock %}

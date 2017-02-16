@@ -32,7 +32,7 @@ class User:
         return unicode(self.UName)
 
     def get_alias(self):
-        return self.Alias
+        return str(self.Alias)
 
 conn = pyodbc.connect(
     'DRIVER={SQL Server};SERVER=titan.csse.rose-hulman.edu;DATABASE=ReallyBigGameDatabase;UID=lix4;PWD=cjlxw1h,.')  # replace your own id and password
@@ -108,7 +108,7 @@ def login():
             return redirect(url_for('login'))
         
         cursor.execute("SELECT Alias From Users where Uname = '" + UName + "'")
-        temp_alias = cursor.fetchone()
+        temp_alias = cursor.fetchone()[0]
         users.append(User(UName, temp_alias))
         login_user(users[-1])
         flash('Successfully logged in')
@@ -195,7 +195,7 @@ def gameinfo(Game_id='0'):
             paragraph = request.form['paragraph']
             rating = request.form['rating']
             tag = request.form['tags']
-            command = """set nocount on 
+            command = """SET NOCOUNT ON 
                          DECLARE @output VARCHAR(255);
                          EXEC createReview '%s', %s, %s, 0, '%s', '%s', @output OUTPUT;
                          SELECT @output;""" % (uname, rating, Game_id, paragraph, tag)
@@ -204,10 +204,12 @@ def gameinfo(Game_id='0'):
             result = search()
             return render_template('show_entries.html', entries=result, recommendations=result, alias=current_user.get_alias())
         elif (request.form['submit'] == 'Delete'):
-            command = """set nocount on
+            command = """SET NOCOUNT ON
                          DECLARE @output VARCHAR(255)
-                         EXEC deleteReview '%s', %s, @output OUTPUT
-                         SELECT @output""" % (str(current_user.get_id()), Game_id)
+                         EXEC deleteReview '%s', %s, 0, @output OUTPUT
+                         SELECT * FROM @output""" % (str(current_user.get_id()), Game_id)
+            sys.stdout.write(command + "\n")
+            sys.stdout.flush()
             cursor.execute(command)
             r = cursor.fetchall()
             if (r[0] == 'Successfully deleted review.'):

@@ -9,10 +9,9 @@
     <form method=post action="">
       <div class="control-group">
         <div class="controls">
-          <input type="text" id="new_alias" name="new_alias" value="{% temp %}" required>
+          <input type="text" id="new_alias" name="new_alias" value="{ temp|safe }" required>
         </div>
-      </div>
-      <button class="btn btn-sm btn-success" type="submit">Sign in</button>
+        <button class="btn btn-sm btn-success" type="submit">Sign in</button>
     </form>
     <ul>
       {% for liked in likes %}

@@ -36,4 +36,5 @@ BEGIN
    VALUES (@pname, (SELECT TOP(1) Game_id FROM Game
                       WHERE GName = @gname
                       ORDER BY -Game_id))
+ RETURN (SELECT TOP(1) Game_id FROM Game ORDER BY -Game_id)
 END

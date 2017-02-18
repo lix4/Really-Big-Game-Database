@@ -7,14 +7,24 @@ DECLARE @andText VARCHAR(255)
 DECLARE @orText VARCHAR(255)
 SET @andText = REPLACE(@text, ' ', ' AND ')
 SET @orText = REPLACE(@text, ' ', ' OR ')
-SELECT *
-  FROM Game
-  WHERE CONTAINS((GName, Series, Studio), @andText)
-        OR CONTAINS((GName, Series, Studio), @orText)
-  -- Sort so that those that have all the keywords are shown before
-  -- those with only some.
-  ORDER BY (CASE WHEN CONTAINS((GName, Series, Studio), @andText)
-                   THEN 1
-                 WHEN CONTAINS((GName, Series, Studio), @orText)
-                   THEN 2
-                 END)
+SELECT DISTINCT Sorted.Game_id, Sorted.GName, Sorted.Series, Sorted.Studio,
+    Sorted.ESRB, Sorted.Picture, Sorted.Year
+  FROM (SELECT TOP 100 PERCENT Game.Game_id, Game.GName, Game.Series, Game.Studio,
+            Game.ESRB, Game.Picture, Game.Year
+          FROM (SELECT Game.Game_id, Game.GName, Game.Series, Game.Studio,
+                    Game.ESRB, Game.Picture, Game.Year, 1 AS rank
+                  FROM Game
+                  WHERE CONTAINS((GName, Series, Studio), @andText)
+                UNION
+                SELECT Game.Game_id, Game.GName, Game.Series, Game.Studio,
+                     Game.ESRB, Game.Picture, Game.Year, 2 AS rank
+                  FROM Game, Game_Is_In, Tag
+                  WHERE Game.Game_id = Game_Is_In.Game_id
+                    AND Game_Is_In.TName = Tag.TName
+                    AND CONTAINS(Tag.TName, @orText)
+                UNION
+                SELECT Game.Game_id, Game.GName, Game.Series, Game.Studio,
+                    Game.ESRB, Game.Picture, Game.Year, 3 AS rank
+                  FROM Game
+                  WHERE CONTAINS((GName, Series, Studio), @orText)) AS Game
+          ORDER BY -Game.rank) AS Sorted

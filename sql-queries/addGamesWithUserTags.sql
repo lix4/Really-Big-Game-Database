@@ -1,21 +1,24 @@
-CREATE PROCEDURE addGamesSharingTags
-  @game_id int,
+CREATE PROCEDURE addGamesWithUserTags
+  @uname char(25),
   @score smallint
 AS
-DECLARE @tags TABLE (tname char(20))
+DECLARE @tags TABLE (TName char(20))
 DECLARE @s_results TABLE (game_id int, score smallint)
 DECLARE @score_sum TABLE (game_id int, score smallint)
 
 INSERT INTO @tags
-  SELECT TName FROM Game_is_in
-    WHERE Game_id = @game_id
+  SELECT TOP(10) TName
+  FROM Likes, Game_Is_In
+  WHERE Likes.UName = @uname
+    AND Game_Is_In.Game_id = Likes.Game_id
+  GROUP BY TName
+  ORDER BY -COUNT(*)
 
 INSERT INTO @s_results (game_id, score)
-  SELECT Game_id, @score * Percentage
-    FROM Game_is_in
-    WHERE Game_is_in.Game_id <> @game_id
-      AND Game_is_in.TName IN (SELECT tname
-                                 FROM @tags)
+  SELECT Game_id, @score FROM Game_Is_In
+  WHERE Game_id NOT IN (SELECT Game_id FROM Likes
+                                     WHERE Uname = @uname)
+    AND TName IN (SELECT TName FROM @tags)
 
 INSERT INTO @score_sum (game_id, score)
   SELECT g.game_id, g.score + s.score

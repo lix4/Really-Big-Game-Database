@@ -1,0 +1,49 @@
+USE [ReallyBigGameDatabase]
+GO
+
+/****** Object:  Table [dbo].[Review]    Script Date: 2/18/2017 5:26:23 PM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+SET ANSI_PADDING ON
+GO
+
+CREATE TABLE [dbo].[Review](
+	[R_id] [int] IDENTITY(1,1) NOT NULL,
+	[Rating] [smallint] NOT NULL,
+	[Text] [char](4000) NOT NULL,
+	[Uname] [char](25) NOT NULL,
+	[Mod_id] [int] NULL,
+	[Game_id] [int] NULL,
+ CONSTRAINT [PK_Review] PRIMARY KEY CLUSTERED 
+(
+	[R_id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON) ON [PRIMARY]
+) ON [PRIMARY]
+
+GO
+
+SET ANSI_PADDING OFF
+GO
+
+ALTER TABLE [dbo].[Review]  WITH CHECK ADD  CONSTRAINT [FK_Review_Game] FOREIGN KEY([Game_id])
+REFERENCES [dbo].[Game] ([Game_id])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[Review] CHECK CONSTRAINT [FK_Review_Game]
+GO
+
+ALTER TABLE [dbo].[Review]  WITH CHECK ADD  CONSTRAINT [FK_Review_Users] FOREIGN KEY([Uname])
+REFERENCES [dbo].[Users] ([Uname])
+ON UPDATE CASCADE
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[Review] CHECK CONSTRAINT [FK_Review_Users]
+GO
+

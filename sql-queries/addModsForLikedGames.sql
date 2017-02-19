@@ -1,7 +1,7 @@
-CREATE PROCEDURE addModsSharingGame
-  @game_id int,
+CREATE PROCEDURE addModsForLikedGames
+  @uname char(25),
   @score smallint,
-  @mod_id int = 0 -- To be used to prevent repeating mods
+  @mod_id int = 0
 AS
 DECLARE @s_results TABLE (mod_id int, score smallint)
 DECLARE @score_sum TABLE (mod_id int, score smallint)
@@ -10,7 +10,8 @@ INSERT INTO @s_results (mod_id, score)
   SELECT M_id, @score
     FROM Mod
     WHERE M_id <> @mod_id
-      AND Game_id = @game_id
+      AND Game_id IN (SELECT Game_id FROM Likes
+                        WHERE Uname = @uname)
 
 INSERT INTO @score_sum (mod_id, score)
   SELECT m.mod_id, m.score + s.score

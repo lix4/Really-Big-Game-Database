@@ -10,7 +10,8 @@ CREATE PROCEDURE recommendations
                          -- base game
   @w_siblings smallint = 10, -- different mods from the same base game
   @w_mtags smallint = 10,
-  @w_utags smallint = 10 -- weight for tags detected from User's likes
+  @w_utags smallint = 10, -- weight for tags detected from User's likes
+  @w_mods_for_liked smallint = 5
 AS
 
 -- Weight to multiply scores for the game by. This is just 1 if the
@@ -28,9 +29,11 @@ IF @mod_id <> 0
 BEGIN
   SELECT @game_id = Game_id, @mod_weight = @w_mod
     FROM Mod WHERE M_id = @mod_id
-  EXEC addModsSharingGame @mod_id, @w_siblings
   EXEC addModsSharingTags @mod_id, @w_mtags
 END
+
+EXEC addModsSharingGame @game_id, @w_siblings, @mod_id
+EXEC addModsForLikedGames @uname, @w_mods_for_liked, @mod_id
 
 -- Add 10 to all games in the same series
 SELECT @w_series = @w_series * @mod_weight
